@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Self-Help Chapter & Video Script Creator</title>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -96,6 +97,45 @@
             font-style: italic;
             color: #555;
             text-align: center;
+        }
+        .export-section {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .export-section h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+        .export-button {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px 5px;
+        }
+        .export-button:hover {
+            background-color: #003d82;
+        }
+        .export-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .export-note {
+            font-size: 0.9em;
+            color: #856404;
+            margin-top: 10px;
+        }
+        .pdf-content {
+            display: none;
         }
     </style>
 </head>
@@ -201,6 +241,16 @@
         <textarea id="conclusion" class="chapter-segment" placeholder="Wrap up your chapter..."></textarea>
         <div class="word-count" id="conclusionCount">Words: 0 (Target: 0-0)</div>
     </div>
+      <div class="export-section">
+        <h3>Export Your Script</h3>
+        <p>Generate a clean PDF version of your chapter script.</p>
+        <button class="export-button" id="exportPdfButton">📄 Export as PDF</button>
+        <button class="export-button" id="exportTxtButton">📝 Export as Text</button>
+        <p class="export-note">Your PDF will include the chapter title, all sections, and word counts.</p>
+    </div>
+
+    <!-- Hidden content for PDF generation -->
+    <div id="pdfContent" class="pdf-content"></div>
 
     <script>
         // Speaking rate options (Words Per Minute)
@@ -224,7 +274,10 @@
         const videoDurationInput = document.getElementById('videoDuration');
         const totalWordCountDisplay = document.getElementById('totalWordCountDisplay');
         const textareas = document.querySelectorAll('textarea.chapter-segment'); // Select only content textareas
+        const exportPdfButton = document.getElementById('exportPdfButton');
+        const exportTxtButton = document.getElementById('exportTxtButton');
 
+        
         function getWordCount(text) {
             if (!text) return 0;
             const words = text.trim().split(/\s+/).filter(word => word.length > 0);
@@ -283,7 +336,175 @@
             // This function is now mostly handled by calculateTargetWordCounts which updates all segments
             // This structure helps keep the logic clean and re-calculates everything on any change
         }
+       function generatePdfContent() {
+            const chapterTitle = document.getElementById('chapterTitle').value || 'Untitled Chapter';
+            const selectedPace = parseFloat(speakingPaceSelect.value);
+            const desiredDuration = parseFloat(videoDurationInput.value);
+            const calculatedTotalWords = Math.round(selectedPace * desiredDuration);
 
+            const sectionTitles = [
+                '1. Introduction',
+                '2. Understanding the Problem',
+                '3. The Solution/Framework',
+                '4. Common Obstacles & How to Overcome Them',
+                '5. Putting It All Together / Action Plan',
+                '6. Chapter Conclusion'
+            ];
+
+            let content = `
+                <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            max-width: 8.5in;
+                            margin: 0.5in;
+                        }
+                        h1 {
+                            text-align: center;
+                            color: #0056b3;
+                            font-size: 24px;
+                            margin-bottom: 10px;
+                        }
+                        .metadata {
+                            text-align: center;
+                            font-size: 12px;
+                            color: #666;
+                            margin-bottom: 30px;
+                            padding-bottom: 20px;
+                            border-bottom: 2px solid #0056b3;
+                        }
+                        h2 {
+                            color: #0056b3;
+                            font-size: 16px;
+                            margin-top: 20px;
+                            margin-bottom: 10px;
+                        }
+                        .section-content {
+                            margin-bottom: 20px;
+                            white-space: pre-wrap;
+                            word-wrap: break-word;
+                        }
+                        .word-count-info {
+                            font-size: 11px;
+                            color: #666;
+                            margin-top: 5px;
+                            font-style: italic;
+                        }
+                        .page-break {
+                            page-break-after: always;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>${escapeHtml(chapterTitle)}</h1>
+                    <div class="metadata">
+                        <p><strong>Video Duration:</strong> ${desiredDuration} minutes | <strong>Speaking Pace:</strong> ${selectedPace} WPM | <strong>Target Word Count:</strong> ${calculatedTotalWords} words</p>
+                        <p><strong>Generated:</strong> ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+                    </div>
+            `;
+
+            segments.forEach((segment, index) => {
+                const textarea = document.getElementById(segment.id);
+                const sectionText = textarea.value;
+                const targetMinWords = Math.round(calculatedTotalWords * segment.targetMin);
+                const targetMaxWords = Math.round(calculatedTotalWords * segment.targetMax);
+                const currentWords = getWordCount(sectionText);
+
+                content += `
+                    <h2>${sectionTitles[index]}</h2>
+                    <div class="section-content">${escapeHtml(sectionText)}</div>
+                    <div class="word-count-info">Words: ${currentWords} (Target: ${targetMinWords}-${targetMaxWords})</div>
+                `;
+            });
+
+            content += `
+                </body>
+                </html>
+            `;
+
+            return content;
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function exportPDF() {
+            const chapterTitle = document.getElementById('chapterTitle').value || 'Chapter';
+            const filename = `${chapterTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_script.pdf`;
+
+            const element = document.createElement('div');
+            element.innerHTML = generatePdfContent();
+
+            const opt = {
+                margin: 0.5,
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function exportText() {
+            const chapterTitle = document.getElementById('chapterTitle').value || 'Untitled Chapter';
+            const selectedPace = parseFloat(speakingPaceSelect.value);
+            const desiredDuration = parseFloat(videoDurationInput.value);
+            const calculatedTotalWords = Math.round(selectedPace * desiredDuration);
+
+            const sectionTitles = [
+                '1. INTRODUCTION',
+                '2. UNDERSTANDING THE PROBLEM',
+                '3. THE SOLUTION/FRAMEWORK',
+                '4. COMMON OBSTACLES & HOW TO OVERCOME THEM',
+                '5. PUTTING IT ALL TOGETHER / ACTION PLAN',
+                '6. CHAPTER CONCLUSION'
+            ];
+
+            let content = `${chapterTitle}\n`;
+            content += `${'='.repeat(chapterTitle.length)}\n\n`;
+            content += `Video Duration: ${desiredDuration} minutes\n`;
+            content += `Speaking Pace: ${selectedPace} WPM\n`;
+            content += `Target Word Count: ${calculatedTotalWords} words\n`;
+            content += `Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}\n\n`;
+            content += `${'─'.repeat(60)}\n\n`;
+
+            segments.forEach((segment, index) => {
+                const textarea = document.getElementById(segment.id);
+                const sectionText = textarea.value;
+                const targetMinWords = Math.round(calculatedTotalWords * segment.targetMin);
+                const targetMaxWords = Math.round(calculatedTotalWords * segment.targetMax);
+                const currentWords = getWordCount(sectionText);
+
+                content += `${sectionTitles[index]}\nWords: ${currentWords} (Target: ${targetMinWords}-${targetMaxWords})\n\n`;
+                content += `${sectionText}\n\n`;
+                content += `${'─'.repeat(60)}\n\n`;
+            });
+
+            const filename = `${chapterTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_script.txt`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        
         // Add event listeners to input fields that affect calculation
         speakingPaceSelect.addEventListener('change', updateAllWordCounts);
         videoDurationInput.addEventListener('input', updateAllWordCounts); // Use 'input' for real-time updates
@@ -293,6 +514,10 @@
             textarea.addEventListener('input', updateAllWordCounts);
         });
 
+        // Export button listeners
+        exportPdfButton.addEventListener('click', exportPDF);
+        exportTxtButton.addEventListener('click', exportText);
+        
         // Initial update on page load
         updateAllWordCounts();
     </script>
