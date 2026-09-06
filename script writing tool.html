@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Help Chapter & Video Script Creator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+        }
+        .chapter-section {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            min-height: 100px;
+            font-size: 1em;
+        }
+        .word-count {
+            font-size: 0.9em;
+            color: #555;
+            text-align: right;
+            margin-top: 5px;
+        }
+        .total-word-count {
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            background-color: #e6f7ff;
+        }
+        .word-count.warning {
+            color: orange;
+            font-weight: bold;
+        }
+        .word-count.success {
+            color: green;
+            font-weight: bold;
+        }
+        .word-count.danger {
+            color: red;
+            font-weight: bold;
+        }
+        .settings-panel {
+            background-color: #e9f7e9;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .settings-panel label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .settings-panel select, .settings-panel input[type="number"] {
+            width: calc(100% - 22px); /* Adjust for padding and border */
+            padding: 8px;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        .settings-panel p {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        .settings-panel .note {
+            grid-column: span 2; /* Make this note span both columns */
+            font-style: italic;
+            color: #555;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Self-Help Chapter & Video Script Creator</h1>
+    <p>Adjust your speaking pace and desired video length to dynamically calculate target word counts for your chapter.</p>
+
+    <div class="settings-panel">
+        <div>
+            <label for="speakingPace">Your Speaking Pace:</label>
+            <select id="speakingPace">
+                <option value="120">Slower (approx. 120 WPM)</option>
+                <option value="150" selected>Normal (approx. 150 WPM)</option>
+                <option value="180">Faster (approx. 180 WPM)</option>
+            </select>
+            <p><em>Words Per Minute (WPM)</em></p>
+        </div>
+        <div>
+            <label for="videoDuration">Desired Video Duration:</label>
+            <input type="number" id="videoDuration" value="20" min="1" step="1">
+            <p><em>In Minutes</em></p>
+        </div>
+        <p class="note">Default chapter structure word count percentages remain constant. Adjusting these settings will scale the overall target word count for your chapter.</p>
+    </div>
+
+    <div class="total-word-count" id="totalWordCountDisplay">
+        Calculated Total Word Count for Video: 0 words (0 min)
+    </div>
+
+    <div class="chapter-section">
+        <h2>Chapter Title</h2>
+        <p><em>Example: "Conquering Procrastination: From Stalling to Soaring"</em></p>
+        <textarea id="chapterTitle" rows="1" placeholder="Enter your chapter title here..."></textarea>
+    </div>
+
+    <div class="chapter-section">
+        <h2>1. Introduction <br><small>(Target: 5-10% of chapter)</small></h2>
+        <ul>
+            <li>Hook: Relatable anecdote, statistic, or question.</li>
+            <li>Acknowledge reader's pain/struggle.</li>
+            <li>State what the reader will gain (the promise).</li>
+            <li>Outline key areas/steps.</li>
+        </ul>
+        <textarea id="intro" class="chapter-segment" placeholder="Start writing your introduction..."></textarea>
+        <div class="word-count" id="introCount">Words: 0 (Target: 0-0)</div>
+    </div>
+
+    <div class="chapter-section">
+        <h2>2. Understanding the Problem <br><small>(Target: 15-20% of chapter)</small></h2>
+        <ul>
+            <li>Delve into root causes or common manifestations.</li>
+            <li>Offer insights, research, or misconceptions.</li>
+            <li>Use brief examples/scenarios.</li>
+            <li>Self-reflection prompt.</li>
+        </ul>
+        <textarea id="problem" class="chapter-segment" placeholder="Describe the problem in depth..."></textarea>
+        <div class="word-count" id="problemCount">Words: 0 (Target: 0-0)</div>
+    </div>
+
+    <div class="chapter-section">
+        <h2>3. The Solution/Framework <br><small>(Target: 40-50% of chapter)</small></h2>
+        <ul>
+            <li>Introduce core concept/strategy.</li>
+            <li>Break down into actionable steps/principles.</li>
+            <li>Use clear headings for each step.</li>
+            <li>Provide examples and exercises.</li>
+            <li>Include stories, analogies, or metaphors.</li>
+        </ul>
+        <textarea id="solution" class="chapter-segment" placeholder="Detail your solution, step by step..."></textarea>
+        <div class="word-count" id="solutionCount">Words: 0 (Target: 0-0)</div>
+    </div>
+
+    <div class="chapter-section">
+        <h2>4. Common Obstacles & How to Overcome Them <br><small>(Target: 10-15% of chapter)</small></h2>
+        <ul>
+            <li>Anticipate common challenges/setbacks.</li>
+            <li>Offer strategies/mindset shifts.</li>
+            <li>Reassure the reader.</li>
+        </ul>
+        <textarea id="obstacles" class="chapter-segment" placeholder="Address potential difficulties..."></textarea>
+        <div class="word-count" id="obstaclesCount">Words: 0 (Target: 0-0)</div>
+    </div>
+
+    <div class="chapter-section">
+        <h2>5. Putting It All Together / Action Plan <br><small>(Target: 5-10% of chapter)</small></h2>
+        <ul>
+            <li>Summarize key takeaways.</li>
+            <li>Provide a clear "action plan" or "challenge."</li>
+            <li>Encourage small, consistent steps.</li>
+        </ul>
+        <textarea id="actionPlan" class="chapter-segment" placeholder="Create a concise action plan..."></textarea>
+        <div class="word-count" id="actionPlanCount">Words: 0 (Target: 0-0)</div>
+    </div>
+
+    <div class="chapter-section">
+        <h2>6. Chapter Conclusion <br><small>(Target: 5% of chapter)</small></h2>
+        <ul>
+            <li>Reiterate main promise and positive impact.</li>
+            <li>Offer final encouraging/inspiring thought.</li>
+            <li>Lead-in to the next chapter.</li>
+        </ul>
+        <textarea id="conclusion" class="chapter-segment" placeholder="Wrap up your chapter..."></textarea>
+        <div class="word-count" id="conclusionCount">Words: 0 (Target: 0-0)</div>
+    </div>
+
+    <script>
+        // Speaking rate options (Words Per Minute)
+        const SPEAKING_RATES = {
+            '120': 120, // Slower
+            '150': 150, // Normal
+            '180': 180  // Faster
+        };
+
+        // Chapter segment percentages (from your original structure)
+        const segments = [
+            { id: 'intro', countId: 'introCount', targetMin: 0.05, targetMax: 0.10 },
+            { id: 'problem', countId: 'problemCount', targetMin: 0.15, targetMax: 0.20 },
+            { id: 'solution', countId: 'solutionCount', targetMin: 0.40, targetMax: 0.50 },
+            { id: 'obstacles', countId: 'obstaclesCount', targetMin: 0.10, targetMax: 0.15 },
+            { id: 'actionPlan', countId: 'actionPlanCount', targetMin: 0.05, targetMax: 0.10 },
+            { id: 'conclusion', countId: 'conclusionCount', targetMin: 0.05, targetMax: 0.05 } // Conclusion is often tighter
+        ];
+
+        const speakingPaceSelect = document.getElementById('speakingPace');
+        const videoDurationInput = document.getElementById('videoDuration');
+        const totalWordCountDisplay = document.getElementById('totalWordCountDisplay');
+        const textareas = document.querySelectorAll('textarea.chapter-segment'); // Select only content textareas
+
+        function getWordCount(text) {
+            if (!text) return 0;
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+            return words.length;
+        }
+
+        function calculateTargetWordCounts() {
+            const selectedPace = parseFloat(speakingPaceSelect.value);
+            const desiredDuration = parseFloat(videoDurationInput.value);
+
+            if (isNaN(selectedPace) || isNaN(desiredDuration) || desiredDuration <= 0) {
+                totalWordCountDisplay.textContent = "Calculated Total Word Count for Video: Invalid input";
+                return 0;
+            }
+
+            const calculatedTotalWords = Math.round(selectedPace * desiredDuration);
+            totalWordCountDisplay.textContent = `Calculated Total Word Count for Video: ${calculatedTotalWords} words (${desiredDuration} min)`;
+
+            // Update styling for total count based on general video length expectations
+            totalWordCountDisplay.classList.remove('warning', 'success', 'danger');
+            // Assuming 15-30 minutes is a reasonable range for a single self-help video chapter
+            if (desiredDuration < 15) {
+                 totalWordCountDisplay.classList.add('warning'); // Shorter than typical, might be too rushed
+            } else if (desiredDuration > 30) {
+                 totalWordCountDisplay.classList.add('warning'); // Longer than typical, might lose engagement
+            } else {
+                 totalWordCountDisplay.classList.add('success'); // Within a good range
+            }
+
+
+            // Update individual segment target word counts
+            segments.forEach(segment => {
+                const targetMinWords = Math.round(calculatedTotalWords * segment.targetMin);
+                const targetMaxWords = Math.round(calculatedTotalWords * segment.targetMax);
+
+                const countDisplay = document.getElementById(segment.countId);
+                const currentWords = getWordCount(document.getElementById(segment.id).value);
+
+                countDisplay.textContent = `Words: ${currentWords} (Target: ${targetMinWords}-${targetMaxWords})`;
+                countDisplay.classList.remove('warning', 'success', 'danger');
+
+                if (currentWords < targetMinWords) {
+                    countDisplay.classList.add('danger');
+                } else if (currentWords > targetMaxWords) {
+                    countDisplay.classList.add('warning');
+                } else {
+                    countDisplay.classList.add('success');
+                }
+            });
+
+            return calculatedTotalWords;
+        }
+
+        function updateAllWordCounts() {
+            calculateTargetWordCounts();
+            // This function is now mostly handled by calculateTargetWordCounts which updates all segments
+            // This structure helps keep the logic clean and re-calculates everything on any change
+        }
+
+        // Add event listeners to input fields that affect calculation
+        speakingPaceSelect.addEventListener('change', updateAllWordCounts);
+        videoDurationInput.addEventListener('input', updateAllWordCounts); // Use 'input' for real-time updates
+
+        // Add event listeners to all content text areas for dynamic word count updates
+        textareas.forEach(textarea => {
+            textarea.addEventListener('input', updateAllWordCounts);
+        });
+
+        // Initial update on page load
+        updateAllWordCounts();
+    </script>
+
+</body>
+</html>
